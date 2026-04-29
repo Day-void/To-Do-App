@@ -1,0 +1,25 @@
+{% extends 'todos/base.html' %}
+{% block title %}Delete Todo{% endblock %}
+{% block extra_css %}
+<style>
+    .confirmation {
+        background: #1f1e1e;
+        border: 2px solid #473809;
+        padding: 20px;
+        border-radius: 5px;
+        margin: 20px 0;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<h1>Delete Todo?</h1>
+<div class="confirmation">
+    <p>Are you sure you want to delete this todo?</p>
+    <h3>{{ todo.title }}</h3>
+</div>
+<form method="post" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, Delete It</button>
+    <a href="{% url 'todo_list' %}" class="btn btn-success">Cancel</a>
+</form>
+{% endblock %}

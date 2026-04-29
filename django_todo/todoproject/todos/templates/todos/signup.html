@@ -1,0 +1,52 @@
+{% extends 'todos/base.html' %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<h1>Join the Dark Side</h1>
+<p style="text-align: center; color: #888; margin-bottom: 20px">
+  Create an account to save your tasks.
+</p>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="dark-form">
+    {{ form.as_p }}
+  </div>
+  <button
+    type="submit"
+    class="btn btn-primary"
+    style="width: 100%; margin-top: 10px"
+  >
+    Sign Up
+  </button>
+</form>
+
+<div style="text-align: center; margin-top: 20px">
+  <a
+    href="{% url 'login' %}"
+    style="color: #03dac6; text-decoration: none; font-size: 14px"
+  >
+    Already have an account? Log in
+  </a>
+</div>
+
+<style>
+  
+  p {
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #bb86fc;
+    font-weight: bold;
+  }
+  .helptext {
+    display: block;
+    font-size: 11px;
+    color: #666;
+    margin-top: 4px;
+  }
+</style>
+{% endblock %}

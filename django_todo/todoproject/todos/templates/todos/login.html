@@ -1,0 +1,31 @@
+{% extends 'todos/base.html' %}
+
+{% block title %}Login - Django Todo{% endblock %}
+
+{% block content %}
+<div class="login-form">
+    <h1>Login</h1>
+    <form method="post">
+        {% csrf_token %}
+        
+        {# This ensures users are redirected back to their todos after logging in #}
+        <input type="hidden" name="next" value="{{ next }}">
+
+        {% if form.errors %}
+            <p style="color: #cf6679; margin-bottom: 15px; text-align: center;">
+                Your username and password didn't match. Please try again.
+            </p>
+        {% endif %}
+
+        {{ form.as_p }}
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+        </div>
+    </form>
+    
+    <p style="margin-top: 20px; text-align: center; font-size: 14px;">
+        Don't have an account? <a href="{% url 'signup' %}" style="color: #bb86fc;">Sign up here</a>
+    </p>
+</div>
+{% endblock %}
