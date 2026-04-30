@@ -2,10 +2,8 @@
 # exit on error
 set -o errexit
 
-pip install -r requirements.txt
+# Add 'todoproject/' before the filenames
+pip install -r todoproject/requirements.txt
 
-# Move into the folder where manage.py lives
-# cd todoproject
-
-python manage.py collectstatic --no-input
-python manage.py migrate
+python todoproject/manage.py collectstatic --no-input
+python todoproject/manage.py migrate
