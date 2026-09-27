@@ -1,0 +1,117 @@
+{% extends 'todos/base.html' %}
+{% load icons %}
+{% block title %}Tasks{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <h1>My tasks</h1>
+    <a href="{% url 'todo_create' %}" class="btn btn-primary">{% icon 'plus' 16 %} New task</a>
+</div>
+
+<div class="view-tabs">
+    <a href="?view=all" class="{% if current_view == 'all' %}active{% endif %}">{% icon 'layers' 14 %} All <span class="count">{{ counts.all }}</span></a>
+    <a href="?view=today" class="{% if current_view == 'today' %}active{% endif %}">{% icon 'calendar' 14 %} Today <span class="count">{{ counts.today }}</span></a>
+    <a href="?view=upcoming" class="{% if current_view == 'upcoming' %}active{% endif %}">{% icon 'chevron-down' 14 %} Upcoming <span class="count">{{ counts.upcoming }}</span></a>
+    <a href="?view=overdue" class="{% if current_view == 'overdue' %}active{% endif %}">{% icon 'alert-triangle' 14 %} Overdue <span class="count">{{ counts.overdue }}</span></a>
+</div>
+
+<form method="get" action="{% url 'todo_list' %}">
+    <input type="hidden" name="view" value="{{ current_view }}">
+    <div class="filter-bar">
+        <div class="search-field">
+            {% icon 'search' 16 %}
+            <input type="text" name="search" placeholder="Search tasks, categories, tags…" value="{{ request.GET.search }}">
+        </div>
+        <select name="category" class="form-input" onchange="this.form.submit()">
+            <option value="">All categories</option>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"i" %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="priority" class="form-input" onchange="this.form.submit()">
+            <option value="">Any priority</option>
+            {% for value, label in priority_choices %}
+                <option value="{{ value }}" {% if request.GET.priority == value|stringformat:"i" %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <label class="check-row show-completed">
+        <input type="checkbox" name="show_completed" value="1" class="checkbox" onchange="this.form.submit()" {% if show_completed %}checked{% endif %}>
+        Show completed
+    </label>
+</form>
+
+<form method="post" action="{% url 'todo_bulk_action' %}">
+{% csrf_token %}
+{% if todos %}
+    <div class="bulk-bar">
+        <span>Select tasks to:</span>
+        <button type="submit" name="action" value="complete" class="btn btn-secondary btn-sm">{% icon 'check' 13 %} Complete</button>
+        <button type="submit" name="action" value="delete" class="btn btn-danger btn-sm">{% icon 'trash' 13 %} Delete</button>
+    </div>
+
+    <div class="todo-list">
+        {% for todo in todos %}
+        <div class="todo-card {% if todo.completed %}completed{% endif %} {% if todo.is_overdue %}overdue{% endif %}" data-priority="{{ todo.priority }}">
+            <div class="priority-stripe"></div>
+            <div class="todo-select">
+                <input type="checkbox" name="selected" value="{{ todo.pk }}" class="checkbox">
+            </div>
+            <form method="post" action="{% url 'todo_toggle' todo.pk %}" class="todo-toggle">
+                {% csrf_token %}
+                <button type="submit" aria-label="Toggle complete">
+                    <span class="todo-check">{% icon 'check' 13 %}</span>
+                </button>
+            </form>
+            <div class="todo-body">
+                {% if todo.category or todo.tags.all %}
+                <div class="todo-top">
+                    {% if todo.category %}<span class="chip chip-category">{% icon 'folder' 11 %} {{ todo.category.name }}</span>{% endif %}
+                    {% for tag in todo.tags.all %}<span class="chip chip-tag">{{ tag.name }}</span>{% endfor %}
+                </div>
+                {% endif %}
+                <div class="todo-title">{{ todo.title }}</div>
+                {% if todo.description %}<div class="todo-description">{{ todo.description }}</div>{% endif %}
+                <div class="todo-meta">
+                    {% if todo.due_date %}
+                        <span class="meta-item {% if todo.is_overdue %}overdue-text{% endif %}">
+                            {% icon 'calendar' 13 %} {{ todo.due_date }}{% if todo.is_overdue %} · Overdue{% endif %}
+                        </span>
+                    {% endif %}
+                    {% if todo.recurrence != 'none' %}
+                        <span class="meta-item">{% icon 'repeat' 13 %} {{ todo.get_recurrence_display }}</span>
+                    {% endif %}
+                    {% if todo.subtasks.count %}
+                        <span class="meta-item">{% icon 'sub' 13 %} {{ todo.subtasks.count }} subtask{{ todo.subtasks.count|pluralize }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="todo-actions">
+                <a href="{% url 'todo_edit' todo.pk %}" aria-label="Edit" title="Edit">{% icon 'edit' 16 %}</a>
+                <a href="{% url 'todo_delete' todo.pk %}" class="act-delete" aria-label="Delete" title="Delete">{% icon 'trash' 16 %}</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <span class="icon">{% icon 'inbox' 40 %}</span>
+        {% if request.GET.search or request.GET.category or request.GET.priority %}
+            <strong>No matches</strong>
+            <p>Nothing here fits your current filters. Try clearing search or switching views.</p>
+        {% else %}
+            <strong>Nothing to do (for now)</strong>
+            <p>Create your first task and it'll show up here.</p>
+        {% endif %}
+    </div>
+{% endif %}
+</form>
+
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">{% icon 'chevron-down' 14 cls='rot90' %} Prev</a>{% endif %}
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next {% icon 'chevron-down' 14 cls='rot-90' %}</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

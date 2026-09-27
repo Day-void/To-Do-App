@@ -1,0 +1,15 @@
+{% extends 'todos/base.html' %}
+{% load icons %}
+{% block title %}Move to trash{% endblock %}
+{% block content %}
+<h1>Move to trash?</h1>
+<div class="confirm-box">
+    <p>{% icon 'alert-triangle' 15 %} You can restore this from Trash later.</p>
+    <h3>{{ todo.title }}</h3>
+</div>
+<form method="post" style="display: flex; gap: var(--sp-2);">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">{% icon 'trash' 16 %} Move to trash</button>
+    <a href="{% url 'todo_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

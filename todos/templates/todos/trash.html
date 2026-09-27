@@ -1,0 +1,32 @@
+{% extends 'todos/base.html' %}
+{% load icons %}
+{% block title %}Trash{% endblock %}
+{% block content %}
+<h1 style="margin-bottom: var(--sp-4);">Trash</h1>
+{% if todos %}
+    {% for todo in todos %}
+    <div class="row-card">
+        <div>
+            <div class="row-title">{{ todo.title }}</div>
+            <div class="row-meta">Deleted {{ todo.deleted_at }}</div>
+        </div>
+        <div class="row-actions">
+            <form method="post" action="{% url 'todo_restore' todo.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-secondary btn-sm">{% icon 'rotate-ccw' 14 %} Restore</button>
+            </form>
+            <form method="post" action="{% url 'todo_hard_delete' todo.pk %}" onsubmit="return confirm('Permanently delete this task? This cannot be undone.');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">{% icon 'x' 14 %} Delete forever</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <span class="icon">{% icon 'trash' 40 %}</span>
+        <strong>Trash is empty</strong>
+        <p>Deleted tasks show up here for as long as you keep them.</p>
+    </div>
+{% endif %}
+{% endblock %}

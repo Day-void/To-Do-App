@@ -1,0 +1,48 @@
+{% load static icons %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tasks{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'todos/css/app.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="page">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="{{ message.tags }}">
+                {% if message.tags == 'success' %}{% icon 'check-circle' 16 %}
+                {% elif message.tags == 'error' %}{% icon 'x-circle' 16 %}
+                {% else %}{% icon 'repeat' 16 %}{% endif %}
+                {{ message }}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+        <div class="topbar">
+            <span class="who">{% icon 'user' 16 %} <b>{{ user.username }}</b></span>
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-ghost">{% icon 'logout' 15 %} Log out</button>
+            </form>
+        </div>
+
+        <nav class="tabs">
+            <a href="{% url 'todo_list' %}" class="{% if request.resolver_match.url_name == 'todo_list' %}active{% endif %}">{% icon 'layers' 15 %} Tasks</a>
+            <a href="{% url 'category_list' %}" class="{% if request.resolver_match.url_name == 'category_list' %}active{% endif %}">{% icon 'folder' 15 %} Categories</a>
+            <a href="{% url 'stats' %}" class="{% if request.resolver_match.url_name == 'stats' %}active{% endif %}">{% icon 'chart' 15 %} Stats</a>
+            <a href="{% url 'trash' %}" class="{% if request.resolver_match.url_name == 'trash' %}active{% endif %}">{% icon 'trash' 15 %} Trash</a>
+        </nav>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

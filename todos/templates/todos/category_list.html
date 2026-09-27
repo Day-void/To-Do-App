@@ -1,0 +1,28 @@
+{% extends 'todos/base.html' %}
+{% load icons %}
+{% block title %}Categories{% endblock %}
+{% block content %}
+<h1 style="margin-bottom: var(--sp-4);">Categories</h1>
+<form method="post" class="inline-form">
+    {% csrf_token %}
+    {{ form.name }}
+    <button type="submit" class="btn btn-primary">{% icon 'plus' 16 %} Add</button>
+</form>
+{% if categories %}
+    {% for cat in categories %}
+    <div class="row-card">
+        <div>
+            <div class="row-title">{% icon 'folder' 15 %} {{ cat.name }}</div>
+            <div class="row-meta">{{ cat.todo_count }} task{{ cat.todo_count|pluralize }}</div>
+        </div>
+        <a href="{% url 'category_delete' cat.pk %}" class="btn btn-ghost" style="color: var(--danger-strong);" onclick="return confirm('Delete this category? Tasks keep their other data but lose this category.');">{% icon 'trash' 15 %} Delete</a>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <span class="icon">{% icon 'folder' 40 %}</span>
+        <strong>No categories yet</strong>
+        <p>Add one above to start grouping your tasks.</p>
+    </div>
+{% endif %}
+{% endblock %}

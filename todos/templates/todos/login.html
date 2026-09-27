@@ -1,0 +1,31 @@
+{% extends 'todos/base.html' %}
+{% load icons %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <h1>Welcome back</h1>
+    <p class="auth-sub">Log in to see your tasks.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+
+        {% if form.errors %}
+            <ul class="messages"><li class="error">{% icon 'x-circle' 16 %} Your username and password didn't match. Please try again.</li></ul>
+        {% endif %}
+
+        <div class="field">
+            <label for="{{ form.username.id_for_label }}">Username</label>
+            {{ form.username }}
+        </div>
+        <div class="field">
+            <label for="{{ form.password.id_for_label }}">Password</label>
+            {{ form.password }}
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">{% icon 'login' 16 %} Log in</button>
+    </form>
+
+    <p class="auth-footer">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'todos/base.html' %}
+{% load icons %}
+{% block title %}Stats{% endblock %}
+{% block content %}
+<h1 style="margin-bottom: var(--sp-4);">Your stats</h1>
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">Total tasks</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value accent">{{ completion_rate }}%</div>
+        <div class="stat-label">Completion rate</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ pending }}</div>
+        <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value danger">{{ overdue }}</div>
+        <div class="stat-label">Overdue</div>
+    </div>
+</div>
+<h2 style="margin-bottom: var(--sp-2);">Pending by priority</h2>
+<div class="row-card" style="display: block;">
+{% for label, count in by_priority.items %}
+    <div class="priority-row">
+        <span>
+            {% if label == "High" %}<span class="priority-dot" style="background: var(--priority-high);"></span>
+            {% elif label == "Medium" %}<span class="priority-dot" style="background: var(--priority-medium);"></span>
+            {% else %}<span class="priority-dot" style="background: var(--priority-low);"></span>{% endif %}
+            {{ label }}
+        </span>
+        <span>{{ count }}</span>
+    </div>
+{% endfor %}
+</div>
+{% endblock %}
